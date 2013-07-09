@@ -1,0 +1,5 @@
+name: Call of Diamond
+version: 0.1
+main: us.chrisix.cod.CallOfDiamond
+commands:
+ cod:
