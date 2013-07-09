@@ -13,11 +13,12 @@ import us.chrisix.cod.CallOfDiamond;
 public class WeaponClass {
 
 	private int id;
+	private String name;
 	private Weapon primary, secondary;
 	private Lethal lethal;
 	private Tactical tactical;
 	
-	public WeaponClass(int id, Weapon primary, Weapon secondary, Lethal lethal, Tactical tactical){
+	public WeaponClass(int id, String name, Weapon primary, Weapon secondary, Lethal lethal, Tactical tactical){
 		this.id = id;
 		this.primary = primary;
 		this.secondary = secondary;
@@ -28,17 +29,31 @@ public class WeaponClass {
 	public Weapon getPrimary(){
 		return primary;
 	}
-	
+	public void setPrimary(Weapon w){
+		primary = w;
+	}
 	public Weapon getSecondary(){
 		return secondary;
+	}
+	
+	public void setSecondary(Weapon w){
+		secondary = w;
 	}
 	
 	public Lethal getLethal(){
 		return lethal;
 	}
 	
+	public void setLethal(Lethal l){
+		lethal = l;
+	}
+	
 	public Tactical getTactical(){
 		return tactical;
+	}
+	
+	public void setTactical(Tactical t){
+		tactical = t;
 	}
 	
 	public ItemStack[] dumpInventory(Player p){
@@ -61,6 +76,7 @@ public class WeaponClass {
 	public void save(String player){
 		File f = new File(CallOfDiamond.dir + File.separator +  "classes" + File.separator + player + "_" + id + ".wc");
 		FileConfiguration config = YamlConfiguration.loadConfiguration(f);
+		config.set("name", name);
 		config.set("primary", primary.getId());
 		config.set("secondary", secondary.getId());
 		config.set("lethal", lethal.getId());
@@ -72,13 +88,25 @@ public class WeaponClass {
 		}
 	}
 	
+	public File getFile(String player){
+		return new File(CallOfDiamond.dir + File.separator + "classes" + File.separator + player + "_" + id + ".wc");
+	}
+	
 	public static WeaponClass load(String player, int id){
 		File f = new File(CallOfDiamond.dir + File.separator +  "classes" + File.separator + player + "_" + id + ".wc");
 		if(f.exists()){
 			FileConfiguration config = YamlConfiguration.loadConfiguration(f);
-			return new WeaponClass(id, Weapon.getWeapon(config.getInt("primary")), Weapon.getWeapon(config.getInt("secondary")), Lethal.getLethal(config.getInt("lethal")), Tactical.getTactical(config.getInt("tactical")));
+			return new WeaponClass(id, config.getString("name"), Weapon.getWeapon(config.getInt("primary")), Weapon.getWeapon(config.getInt("secondary")), Lethal.getLethal(config.getInt("lethal")), Tactical.getTactical(config.getInt("tactical")));
 		}
 		return null;
 	}
 	
+	public static WeaponClass empty(String player, String name){
+		int i = 0;
+		while(true){
+			if(!new File(CallOfDiamond.dir + File.separator +  "classes" + File.separator + player + "_" + i + ".wc").exists()){
+				return new WeaponClass(i, name, null, null, null, null);
+			}
+		}
+	}
 }
